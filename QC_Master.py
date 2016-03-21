@@ -18,25 +18,19 @@ import arcpy
 from arcpy import env
 arcpy.CheckOutExtension("Spatial")
 from arcpy.sa import *
-
-# variable definition, ideally this will be user defined and filter into a
-# function.
-
-env.workspace = env.scratchWorkspace = r'D:\GIS\AlaskaCode\ucrbtest.gdb'
+Workspace = arcpy.GetParameterAsText(0)
+env.workspace = env.scratchWorkspace = Workspace
 env.overwriteOutput = True
-
-StrLines = "NHD1406Extract"
-DEM = "BigAssDEMvSix1"
-##WBDPoly = "Huc12Export2"
-WBDLine = "WBDLine"
-PourPoints = 'PourPoints'
-HucsIn = "WBDHU12"
+StrLines = arcpy.GetParameterAsText(1)
+DEM = arcpy.GetParameterAsText(2)
+WBDLine = arcpy.GetParameterAsText(3)
+HucsIn = arcpy.GetParameterAsText(4)
 
 spatial_ref = arcpy.Describe(StrLines)
 spatial_ref = spatial_ref.spatialReference
 
 
-# In the immortal words of Samuel L. Jackson - "Hold onto your butts"
+# defines the functions to be run over the HUCs
 
 def PourLinesAndPoints (StrLines, DEM, WBDPoly, WBDLine):
     # Creates a clip mask based on the selected WBD Polygon, does general dissolve stuff
@@ -164,3 +158,4 @@ for feat in sc:
     PourLinesAndPoints(StrLines, DEM, WBDPoly, WBDLine)
     BufferAnalysis(StrLines, WBDPoly, PourPoints)
 arcpy.Delete_management(WBDPoly)
+del sc
